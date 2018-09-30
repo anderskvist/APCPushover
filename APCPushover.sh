@@ -9,10 +9,19 @@ LINEV=$(/sbin/apcaccess -p LINEV 2> /dev/null | awk '{print $1}')
 OUTPUTV=$(/sbin/apcaccess -p OUTPUTV 2> /dev/null | awk '{print $1}')
 LOADPCT=$(/sbin/apcaccess -p LOADPCT 2> /dev/null | awk '{print $1}')
 
+MODEL=$(/sbin/apcaccess -p MODEL 2> /dev/null) # no trimming
+
 if [ "${STATUS}" = "" ]; then
     MESSAGE="Could not connect to apcupsd"
 else
-    MESSAGE="Status: ${STATUS}"$'\n'"Battery: ${BCHARGE}%"$'\n'"Load: ${LOADPCT}%"$'\n'"Time left: ${TIMELEFT} min"$'\n'"Input: ${LINEV}V"$'\n'"Output: ${OUTPUTV}V"$'\n'
+    case "${MODEL}" in
+	Smart-UPS*)
+	    MESSAGE="Status: ${STATUS}"$'\n'"Battery: ${BCHARGE}%"$'\n'"Load: ${LOADPCT}%"$'\n'"Time left: ${TIMELEFT} min"$'\n'"Input: ${LINEV}V"$'\n'"Output: ${OUTPUTV}V"$'\n'
+	    ;;
+	Back-UPS*)
+	    MESSAGE="Status: ${STATUS}"$'\n'"Battery: ${BCHARGE}%"$'\n'"Time left: ${TIMELEFT} min"$'\n'
+	    ;;
+    esac
 fi
 
 SEND=1
