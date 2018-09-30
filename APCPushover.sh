@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-source $(dirname "$0")/config.sh
+source $(dirname "$0")/config.sh || echo "Create a config.sh containing TOKEN and USER keys from pushover"
 
 STATUS=$(/sbin/apcaccess -p STATUS 2> /dev/null | awk '{print $1}')
 BCHARGE=$(/sbin/apcaccess -p BCHARGE 2> /dev/null | awk '{print $1}')
