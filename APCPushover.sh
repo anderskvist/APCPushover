@@ -12,7 +12,7 @@ LOADPCT=$(/sbin/apcaccess -p LOADPCT 2> /dev/null | awk '{print $1}')
 if [ "${STATUS}" = "" ]; then
     MESSAGE="Could not connect to apcupsd"
 else
-    MESSAGE="Status: ${STATUS}"$'\n'"Battery: ${BCHARGE}%"$'\n'"Load: ${LOADPCT}%"$'\n'"Time left: ${TIMELEFT} min"$'\n'"Input: ${LINEV}V"$'\n'"Output: ${OUTPUTV}V"$'\n'    
+    MESSAGE="Status: ${STATUS}"$'\n'"Battery: ${BCHARGE}%"$'\n'"Load: ${LOADPCT}%"$'\n'"Time left: ${TIMELEFT} min"$'\n'"Input: ${LINEV}V"$'\n'"Output: ${OUTPUTV}V"$'\n'
 fi
 
 SEND=1
