@@ -2,14 +2,15 @@
 
 source $(dirname "$0")/config.sh || echo "Create a config.sh containing TOKEN and USER keys from pushover"
 
+LASTRUN=/tmp/$(basename ${0}|sha256sum|awk '{print $1}')_lastrun
+
 STATUS=$(/sbin/apcaccess -p STATUS 2> /dev/null | awk '{print $1}')
 BCHARGE=$(/sbin/apcaccess -p BCHARGE 2> /dev/null | awk '{print $1}')
 TIMELEFT=$(/sbin/apcaccess -p TIMELEFT 2> /dev/null | awk '{print $1}')
 LINEV=$(/sbin/apcaccess -p LINEV 2> /dev/null | awk '{print $1}')
 OUTPUTV=$(/sbin/apcaccess -p OUTPUTV 2> /dev/null | awk '{print $1}')
 LOADPCT=$(/sbin/apcaccess -p LOADPCT 2> /dev/null | awk '{print $1}')
-
-MODEL=$(/sbin/apcaccess -p MODEL 2> /dev/null) # no trimming
+MODEL=$(/sbin/apcaccess -p MODEL 2> /dev/null | awk -F '\n' '{print $1}')
 
 if [ "${STATUS}" = "" ]; then
     MESSAGE="Could not connect to apcupsd"
@@ -28,9 +29,11 @@ SEND=1
 
 case ${STATUS} in
     ONLINE)
-	# FIXME: we would like to get a single 100% notification
 	if [ $(echo ${BCHARGE}|cut -d"." -f1) = "100" ]; then
 	    SEND=0
+	    if [ $(cat ${LASTRUN}|cut -d"." -f1) -lt 100 ]; then
+		SEND=1
+	    fi
 	fi
 	;;
 esac
@@ -38,6 +41,8 @@ esac
 if [ "${1}" = "force" ]; then
     SEND=2
 fi
+
+echo -n ${BCHARGE} > ${LASTRUN} # save last BCHARGE
 
 if [ ${SEND} -gt 0 ]; then
     curl -s \
