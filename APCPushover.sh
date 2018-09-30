@@ -28,6 +28,7 @@ SEND=1
 
 case ${STATUS} in
     ONLINE)
+	# FIXME: we would like to get a single 100% notification
 	if [ $(echo ${BCHARGE}|cut -d"." -f1) = "100" ]; then
 	    SEND=0
 	fi
